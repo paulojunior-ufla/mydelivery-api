@@ -1,0 +1,38 @@
+# APP VARS
+
+@base_url = http://localhost:8080
+@cliente_id = 12
+
+### TODOS CLIENTES
+
+GET {{base_url}}/clientes
+
+### OBTER CLIENTE
+
+GET {{base_url}}/clientes/{{cliente_id}}
+
+### CADASTRAR CLIENTE
+
+POST {{base_url}}/clientes
+Content-Type: application/json
+
+{
+    "nome": "Paulo",
+    "email": "999@email.com",
+    "telefone": "9999"
+}
+ 
+### ATUALIZAR CLIENTE
+
+PUT {{base_url}}/clientes/{{cliente_id}}
+Content-Type: application/json
+
+{
+    "nome": "Paulo Jr",
+    "email": "999@email.com",
+    "telefone": "35 9 9999-0000"
+}
+
+### EXCLUIR CLIENTE
+
+DELETE {{base_url}}/clientes/{{cliente_id}}
