@@ -9,10 +9,10 @@ import (
 
 type clienteHandler struct {
 	clienteRepo cliente.Repository
-	clienteSrv  cliente.ClienteService
+	clienteSrv  cliente.Service
 }
 
-func NewClienteHandler(clienteRepo cliente.Repository, clienteSrv cliente.ClienteService) *clienteHandler {
+func NewClienteHandler(clienteRepo cliente.Repository, clienteSrv cliente.Service) *clienteHandler {
 	return &clienteHandler{clienteRepo, clienteSrv}
 }
 
@@ -25,13 +25,13 @@ func (h *clienteHandler) InitRoutes(router *httprouter.Router) {
 }
 
 func (h *clienteHandler) Listar(w http.ResponseWriter, r *http.Request) {
-	cc, err := h.clienteRepo.Todos()
+	clientes, err := h.clienteRepo.Todos()
 	if err != nil {
 		handleError(w, r, err)
 		return
 	}
 
-	writeJSON(w, http.StatusOK, cliente.ToClienteResponseCollection(cc))
+	writeJSON(w, http.StatusOK, cliente.ToClienteResponseCollection(clientes))
 }
 
 func (h *clienteHandler) BuscarPorID(w http.ResponseWriter, r *http.Request) {

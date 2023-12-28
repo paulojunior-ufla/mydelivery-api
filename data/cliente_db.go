@@ -1,4 +1,4 @@
-package sqlite
+package data
 
 import (
 	"database/sql"
@@ -31,43 +31,28 @@ func (r *clienteRepository) Todos() ([]cliente.Cliente, error) {
 	}
 	defer rows.Close()
 
-	entityList := []*clienteEntity{}
+	entities := []clienteEntity{}
 	for rows.Next() {
-		var entity clienteEntity
-		err := rows.Scan(&entity.id, &entity.nome, &entity.email, &entity.telefone)
+		var e clienteEntity
+		err := rows.Scan(&e.id, &e.nome, &e.email, &e.telefone)
 		if err != nil {
 			return nil, errs.NewUnexpectedError(err)
 		}
-		entityList = append(entityList, &entity)
+		entities = append(entities, e)
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, errs.NewUnexpectedError(err)
 	}
 
-	return toClienteList(entityList), nil
+	return toClienteCollection(entities), nil
 }
 
 func (r *clienteRepository) ObterPorID(id int64) (cliente.Cliente, error) {
 	query := "SELECT id, nome, email, telefone FROM cliente WHERE id = ?"
 
-	var entity clienteEntity
-	err := r.db.QueryRow(query, id).Scan(&entity.id, &entity.nome, &entity.email, &entity.telefone)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errs.NewNotFoundError("cliente não encontrado")
-		}
-		return nil, errs.NewUnexpectedError(err)
-	}
-
-	return toCliente(&entity), nil
-}
-
-func (r *clienteRepository) ObterPorEmail(email string) (cliente.Cliente, error) {
-	query := "SELECT id, nome, email, telefone FROM cliente WHERE email = ?"
-
-	var entity clienteEntity
-	err := r.db.QueryRow(query, email).Scan(&entity.id, &entity.nome, &entity.email, &entity.telefone)
+	var e clienteEntity
+	err := r.db.QueryRow(query, id).Scan(&e.id, &e.nome, &e.email, &e.telefone)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -75,43 +60,58 @@ func (r *clienteRepository) ObterPorEmail(email string) (cliente.Cliente, error)
 		return nil, errs.NewUnexpectedError(err)
 	}
 
-	return toCliente(&entity), nil
+	return toCliente(e), nil
 }
 
-func (r *clienteRepository) Salvar(c cliente.Cliente) (cliente.Cliente, error) {
+func (r *clienteRepository) ObterPorEmail(email string) (cliente.Cliente, error) {
+	query := "SELECT id, nome, email, telefone FROM cliente WHERE email = ?"
+
+	var e clienteEntity
+	err := r.db.QueryRow(query, email).Scan(&e.id, &e.nome, &e.email, &e.telefone)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, errs.NewUnexpectedError(err)
+	}
+
+	return toCliente(e), nil
+}
+
+func (r *clienteRepository) Salvar(c cliente.Cliente) (int64, error) {
 	query := "INSERT INTO cliente(nome, email, telefone) VALUES(?, ?, ?)"
 
 	result, err := r.db.Exec(query, c.Nome(), c.Email(), c.Telefone())
 	if err != nil {
-		return nil, errs.NewUnexpectedError(err)
+		return 0, errs.NewUnexpectedError(err)
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return nil, errs.NewUnexpectedError(err)
+		return 0, errs.NewUnexpectedError(err)
 	}
 
-	return cliente.NewWithID(id, c.Nome(), c.Email(), c.Telefone()), nil
+	return id, nil
 }
 
-func (r *clienteRepository) Atualizar(c cliente.Cliente) (cliente.Cliente, error) {
+func (r *clienteRepository) Atualizar(c cliente.Cliente) error {
 	query := "UPDATE cliente SET nome = ?, email = ?, telefone = ? WHERE id = ?"
 
 	result, err := r.db.Exec(query, c.Nome(), c.Email(), c.Telefone(), c.ID())
 	if err != nil {
-		return nil, errs.NewUnexpectedError(err)
+		return errs.NewUnexpectedError(err)
 	}
 
 	linhasAfetadas, err := result.RowsAffected()
 	if err != nil {
-		return nil, errs.NewUnexpectedError(err)
+		return errs.NewUnexpectedError(err)
 	}
 
 	if linhasAfetadas == 0 {
-		return nil, errs.NewNotFoundError("cliente não encontrado")
+		return errs.NewNotFoundError("cliente não encontrado")
 	}
 
-	return cliente.NewWithID(c.ID(), c.Nome(), c.Email(), c.Telefone()), nil
+	return nil
 }
 
 func (r *clienteRepository) Excluir(id int64) error {
@@ -134,14 +134,21 @@ func (r *clienteRepository) Excluir(id int64) error {
 	return nil
 }
 
-func toClienteList(clienteEntityList []*clienteEntity) []cliente.Cliente {
+func toClienteCollection(entities []clienteEntity) []cliente.Cliente {
 	clientes := []cliente.Cliente{}
-	for _, entity := range clienteEntityList {
-		clientes = append(clientes, toCliente(entity))
+	for _, e := range entities {
+		clientes = append(clientes, toCliente(e))
 	}
 	return clientes
 }
 
-func toCliente(entity *clienteEntity) cliente.Cliente {
-	return cliente.NewWithID(entity.id, entity.nome, entity.email, entity.telefone)
+func toCliente(e clienteEntity) cliente.Cliente {
+	cliente, _ := cliente.New().
+		SetID(e.id).
+		SetNome(e.nome).
+		SetEmail(e.email).
+		SetTelefone(e.telefone).
+		Build()
+
+	return cliente
 }

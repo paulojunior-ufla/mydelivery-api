@@ -2,22 +2,26 @@ package cliente
 
 import "go/mydelivery/shared/errs"
 
-type salvaClienteService struct {
+type service struct {
 	clientes Repository
 }
 
-func NewSalvaClienteService(cc Repository) ClienteService {
-	return &salvaClienteService{cc}
+func NewService(clientes Repository) Service {
+	return &service{clientes}
 }
 
-func (s *salvaClienteService) Salvar(input ClienteRequest) (ClienteResponse, error) {
-	cliente := New(input.Nome, input.Email, input.Telefone)
-	err := cliente.Validar()
+func (s *service) Salvar(input ClienteRequest) (ClienteResponse, error) {
+	cliente, err := New().
+		SetNome(input.Nome).
+		SetEmail(input.Email).
+		SetTelefone(input.Telefone).
+		Build()
+
 	if err != nil {
 		return ClienteResponse{}, err
 	}
 
-	clienteExistente, err := s.clientes.ObterPorEmail(input.Email)
+	clienteExistente, err := s.clientes.ObterPorEmail(cliente.Email())
 	if err != nil {
 		return ClienteResponse{}, err
 	}
@@ -26,27 +30,30 @@ func (s *salvaClienteService) Salvar(input ClienteRequest) (ClienteResponse, err
 		return ClienteResponse{}, errs.NewConflictError("já existe um cliente cadastrado com esse email")
 	}
 
-	novoCliente, err := s.clientes.Salvar(cliente)
+	id, err := s.clientes.Salvar(cliente)
 	if err != nil {
 		return ClienteResponse{}, err
 	}
 
-	return ClienteResponse{
-		ID:       novoCliente.ID(),
-		Nome:     novoCliente.Nome(),
-		Email:    novoCliente.Email(),
-		Telefone: novoCliente.Telefone(),
-	}, nil
+	response := ToClienteResponse(cliente)
+	response.ID = id
+
+	return response, nil
 }
 
-func (s *salvaClienteService) Atualizar(id int64, input ClienteRequest) (ClienteResponse, error) {
-	cliente := NewWithID(id, input.Nome, input.Email, input.Telefone)
-	err := cliente.Validar()
+func (s *service) Atualizar(id int64, input ClienteRequest) (ClienteResponse, error) {
+	cliente, err := New().
+		SetID(id).
+		SetNome(input.Nome).
+		SetEmail(input.Email).
+		SetTelefone(input.Telefone).
+		Build()
+
 	if err != nil {
 		return ClienteResponse{}, err
 	}
 
-	clienteExistente, err := s.clientes.ObterPorEmail(input.Email)
+	clienteExistente, err := s.clientes.ObterPorEmail(cliente.Email())
 	if err != nil {
 		return ClienteResponse{}, err
 	}
@@ -55,15 +62,10 @@ func (s *salvaClienteService) Atualizar(id int64, input ClienteRequest) (Cliente
 		return ClienteResponse{}, errs.NewConflictError("já existe um cliente cadastrado com esse email")
 	}
 
-	clienteAtualizado, err := s.clientes.Atualizar(cliente)
+	err = s.clientes.Atualizar(cliente)
 	if err != nil {
 		return ClienteResponse{}, err
 	}
 
-	return ClienteResponse{
-		ID:       clienteAtualizado.ID(),
-		Nome:     clienteAtualizado.Nome(),
-		Email:    clienteAtualizado.Email(),
-		Telefone: clienteAtualizado.Telefone(),
-	}, nil
+	return ToClienteResponse(cliente), nil
 }

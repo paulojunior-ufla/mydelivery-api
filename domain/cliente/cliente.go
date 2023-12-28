@@ -1,7 +1,6 @@
 package cliente
 
 import (
-	"fmt"
 	"go/mydelivery/shared/errs"
 	"go/mydelivery/shared/validator"
 )
@@ -13,36 +12,51 @@ type cliente struct {
 	telefone string
 }
 
-func New(nome, email, telefone string) Cliente {
-	return &cliente{0, nome, email, telefone}
-}
-
-func NewWithID(id int64, nome, email, telefone string) Cliente {
-	return &cliente{id, nome, email, telefone}
-}
-
-func (c *cliente) ID() int64 { return c.id }
-
-func (c *cliente) Nome() string { return c.nome }
-
-func (c *cliente) Email() string { return c.email }
-
+func (c *cliente) ID() int64        { return c.id }
+func (c *cliente) Nome() string     { return c.nome }
+func (c *cliente) Email() string    { return c.email }
 func (c *cliente) Telefone() string { return c.telefone }
 
-func (c *cliente) String() string {
-	return fmt.Sprintf("\nID: %d\nNome: %s\nEmail: %s\nTelefone: %s\n",
-		c.id, c.nome, c.email, c.telefone)
+type ClienteBuilder struct {
+	cliente *cliente
 }
 
-func (c *cliente) Validar() error {
+func New() *ClienteBuilder {
+	return &ClienteBuilder{
+		cliente: &cliente{},
+	}
+}
+
+func (b *ClienteBuilder) SetID(id int64) *ClienteBuilder {
+	b.cliente.id = id
+	return b
+}
+
+func (b *ClienteBuilder) SetNome(nome string) *ClienteBuilder {
+	b.cliente.nome = nome
+	return b
+}
+
+func (b *ClienteBuilder) SetEmail(email string) *ClienteBuilder {
+	b.cliente.email = email
+	return b
+}
+
+func (b *ClienteBuilder) SetTelefone(telefone string) *ClienteBuilder {
+	b.cliente.telefone = telefone
+	return b
+}
+
+func (b *ClienteBuilder) Build() (Cliente, error) {
 	v := validator.New()
-	v.CheckBlank("nome", c.nome)
-	v.CheckEmail("email", c.email)
-	v.CheckBlank("telefone", c.telefone)
+
+	v.CheckBlank("nome", b.cliente.nome)
+	v.CheckEmail("email", b.cliente.email)
+	v.CheckBlank("telefone", b.cliente.telefone)
 
 	if v.HasErrors() {
-		return errs.NewValidationError(v.Errors)
+		return nil, errs.NewValidationError(v.Errors)
 	}
 
-	return nil
+	return b.cliente, nil
 }
