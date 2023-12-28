@@ -1,11 +1,11 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"go/mydelivery/cmd/api/handler"
+	"go/mydelivery/data/sqlite"
 	"go/mydelivery/domain/cliente"
-	"go/mydelivery/persistence"
-	"go/mydelivery/persistence/sqlite"
 	"log/slog"
 	"net/http"
 	"os"
@@ -22,7 +22,7 @@ func main() {
 	var cfg config
 	flag.StringVar(&cfg.dsn, "dsn", "file:database_dev.db", "Datasource url")
 
-	db, err := persistence.NewConnection(cfg.dsn)
+	db, err := openDB(cfg.dsn)
 	if err != nil {
 		slog.Error("db connection failed")
 		os.Exit(1)
@@ -38,4 +38,18 @@ func main() {
 
 	slog.Info("server started", "addr", addr)
 	http.ListenAndServe(addr, router)
+}
+
+func openDB(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.Ping()
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }
