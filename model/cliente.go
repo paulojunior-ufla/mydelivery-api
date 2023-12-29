@@ -33,37 +33,37 @@ func (c *cliente) Nome() string     { return c.nome }
 func (c *cliente) Email() string    { return c.email }
 func (c *cliente) Telefone() string { return c.telefone }
 
-type ClienteBuilder struct {
+type clienteBuilder struct {
 	cliente *cliente
 }
 
-func NewCliente() *ClienteBuilder {
-	return &ClienteBuilder{
+func NewCliente() *clienteBuilder {
+	return &clienteBuilder{
 		cliente: &cliente{},
 	}
 }
 
-func (b *ClienteBuilder) SetID(id int64) *ClienteBuilder {
+func (b *clienteBuilder) SetID(id int64) *clienteBuilder {
 	b.cliente.id = id
 	return b
 }
 
-func (b *ClienteBuilder) SetNome(nome string) *ClienteBuilder {
+func (b *clienteBuilder) SetNome(nome string) *clienteBuilder {
 	b.cliente.nome = nome
 	return b
 }
 
-func (b *ClienteBuilder) SetEmail(email string) *ClienteBuilder {
+func (b *clienteBuilder) SetEmail(email string) *clienteBuilder {
 	b.cliente.email = email
 	return b
 }
 
-func (b *ClienteBuilder) SetTelefone(telefone string) *ClienteBuilder {
+func (b *clienteBuilder) SetTelefone(telefone string) *clienteBuilder {
 	b.cliente.telefone = telefone
 	return b
 }
 
-func (b *ClienteBuilder) Build() (Cliente, error) {
+func (b *clienteBuilder) Build() (Cliente, error) {
 	v := validator.New()
 
 	v.CheckBlank("nome do cliente", b.cliente.nome)

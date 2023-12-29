@@ -1,0 +1,11 @@
+# APP VARS
+
+@base_url = http://localhost:8080
+@entrega_id = 1
+
+POST {{base_url}}/entregas/{{entrega_id}}/ocorrencias
+Content-Type: application/json
+
+{
+    "descricao": "Entregue"
+}

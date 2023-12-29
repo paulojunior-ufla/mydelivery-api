@@ -16,3 +16,12 @@ create table entrega (
     
     FOREIGN KEY(cliente_id) REFERENCES cliente(id)
 );
+
+create table ocorrencia (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    entrega_id INTEGER NOT NULL,
+    descricao TEXT CHECK( descricao != '' ),
+    data_registro DATETIME NOT NULL,
+    
+    FOREIGN KEY(entrega_id) REFERENCES entrega(id)
+);

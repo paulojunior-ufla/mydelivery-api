@@ -19,7 +19,7 @@ func New() *Validator {
 
 func (v *Validator) CheckBlank(key, value string) {
 	if strings.TrimSpace(value) == "" {
-		message := fmt.Sprintf("%s: não pode ser vazio", key)
+		message := fmt.Sprintf("%s: não pode ser vazio(a)", key)
 		v.Errors = append(v.Errors, message)
 	}
 }

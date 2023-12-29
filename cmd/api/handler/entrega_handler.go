@@ -14,7 +14,9 @@ type entregaHandler struct {
 	solicitaEntregaSrv entrega.SolicitaEntregaService
 }
 
-func NewEntregaHandler(entregaRepo model.EntregaRepository, solicitaEntregaSrv entrega.SolicitaEntregaService) *entregaHandler {
+func NewEntregaHandler(
+	entregaRepo model.EntregaRepository,
+	solicitaEntregaSrv entrega.SolicitaEntregaService) *entregaHandler {
 	return &entregaHandler{entregaRepo, solicitaEntregaSrv}
 }
 
