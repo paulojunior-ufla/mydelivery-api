@@ -1,7 +1,7 @@
 # APP VARS
 
 @base_url = http://localhost:8080
-@entrega_id = 1
+@entrega_id = 333
 
 GET {{base_url}}/entregas/{{entrega_id}}
 
@@ -16,3 +16,7 @@ Content-Type: application/json
     "nome_destinatario": "Flávia",
     "endereco_destinatario": "Rua José das Couves, 999"
 }
+
+###
+
+PUT {{base_url}}/entregas/{{entrega_id}}/finalizar

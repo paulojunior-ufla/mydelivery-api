@@ -37,7 +37,9 @@ func main() {
 	handler.NewClienteHandler(clienteRepo, cliente.NewCatalogoService(clienteRepo)).InitRoutes(router)
 
 	entregaRepo := model.NewEntregaRepositoryDB(db)
-	handler.NewEntregaHandler(entregaRepo, entrega.NewSolicitaEntregaService(clienteRepo, entregaRepo)).InitRoutes(router)
+	handler.NewEntregaHandler(entregaRepo,
+		entrega.NewSolicitaEntregaService(clienteRepo, entregaRepo),
+		entrega.NewFinalizaEntregaService(entregaRepo)).InitRoutes(router)
 
 	ocorrenciaRepo := model.NewOcorrenciaRepositoryDB(db)
 	handler.NewOcorrenciaHandler(ocorrenciaRepo, ocorrencia.NewRegistraOcorrenciaService(ocorrenciaRepo, entregaRepo)).InitRoutes(router)

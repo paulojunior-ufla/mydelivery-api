@@ -12,17 +12,20 @@ import (
 type entregaHandler struct {
 	entregaRepo        model.EntregaRepository
 	solicitaEntregaSrv entrega.SolicitaEntregaService
+	finalizaEntregaSrv entrega.FinalizaEntregaService
 }
 
 func NewEntregaHandler(
 	entregaRepo model.EntregaRepository,
-	solicitaEntregaSrv entrega.SolicitaEntregaService) *entregaHandler {
-	return &entregaHandler{entregaRepo, solicitaEntregaSrv}
+	solicitaEntregaSrv entrega.SolicitaEntregaService,
+	finalizaEntregaSrv entrega.FinalizaEntregaService) *entregaHandler {
+	return &entregaHandler{entregaRepo, solicitaEntregaSrv, finalizaEntregaSrv}
 }
 
 func (h *entregaHandler) InitRoutes(router *httprouter.Router) {
 	router.HandlerFunc(http.MethodPost, "/entregas", h.Solicitar)
 	router.HandlerFunc(http.MethodGet, "/entregas/:id", h.BuscarPorID)
+	router.HandlerFunc(http.MethodPut, "/entregas/:id/finalizar", h.Finalizar)
 }
 
 func (h *entregaHandler) Solicitar(w http.ResponseWriter, r *http.Request) {
@@ -60,5 +63,21 @@ func (h *entregaHandler) BuscarPorID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, entrega.ToSolicitaEntregaResponse(e))
+	writeJSON(w, http.StatusOK, entrega.ToEntregaResponse(e))
+}
+
+func (h *entregaHandler) Finalizar(w http.ResponseWriter, r *http.Request) {
+	id, err := readIDParam(r)
+	if err != nil {
+		handleError(w, r, err)
+		return
+	}
+
+	e, err := h.finalizaEntregaSrv.Finalizar(id)
+	if err != nil {
+		handleError(w, r, err)
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, e)
 }

@@ -26,6 +26,8 @@ type Entrega interface {
 	Status() StatusEntrega
 	DataPedido() time.Time
 	Destinatario() Destinatario
+
+	Finalizar() error
 }
 
 type entrega struct {
@@ -43,6 +45,17 @@ func (e *entrega) Taxa() float64              { return e.taxa }
 func (e *entrega) Status() StatusEntrega      { return e.status }
 func (e *entrega) DataPedido() time.Time      { return e.dataPedido }
 func (e *entrega) Destinatario() Destinatario { return e.destinatario }
+
+func (e *entrega) podeSerFinalizada() bool    { return e.status == ENTREGA_PENDENTE }
+func (e *entrega) naoPodeSerFinalizada() bool { return !e.podeSerFinalizada() }
+
+func (e *entrega) Finalizar() error {
+	if e.naoPodeSerFinalizada() {
+		return errs.NewConflictError("esta entrega não pode ser finalizada")
+	}
+	e.status = ENTREGA_FINALIZADA
+	return nil
+}
 
 type entregaBuilder struct {
 	entrega *entrega

@@ -14,14 +14,14 @@ func NewSolicitaEntregaService(clientes model.ClienteRepository, entregas model.
 	return &solicitaEntregaService{clientes, entregas}
 }
 
-func (s *solicitaEntregaService) Solicitar(input SolicitaEntregaRequest) (SolicitaEntregaResponse, error) {
+func (s *solicitaEntregaService) Solicitar(input SolicitaEntregaRequest) (EntregaResponse, error) {
 	cliente, err := s.clientes.ObterPorID(input.ClienteID)
 	if err != nil {
-		return SolicitaEntregaResponse{}, err
+		return EntregaResponse{}, err
 	}
 
 	if cliente == nil {
-		return SolicitaEntregaResponse{}, errs.NewConflictError("cliente da entrega inválido")
+		return EntregaResponse{}, errs.NewConflictError("cliente da entrega inválido")
 	}
 
 	destinatario, err := model.NewDestinatario().
@@ -30,7 +30,7 @@ func (s *solicitaEntregaService) Solicitar(input SolicitaEntregaRequest) (Solici
 		Build()
 
 	if err != nil {
-		return SolicitaEntregaResponse{}, err
+		return EntregaResponse{}, err
 	}
 
 	entrega, err := model.NewEntrega().
@@ -40,15 +40,15 @@ func (s *solicitaEntregaService) Solicitar(input SolicitaEntregaRequest) (Solici
 		Build()
 
 	if err != nil {
-		return SolicitaEntregaResponse{}, err
+		return EntregaResponse{}, err
 	}
 
 	idNovaEntrega, err := s.entregas.Salvar(entrega)
 	if err != nil {
-		return SolicitaEntregaResponse{}, err
+		return EntregaResponse{}, err
 	}
 
-	response := ToSolicitaEntregaResponse(entrega)
+	response := ToEntregaResponse(entrega)
 	response.ID = idNovaEntrega
 
 	return response, nil
