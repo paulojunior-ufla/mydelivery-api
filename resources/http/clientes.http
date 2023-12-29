@@ -17,8 +17,8 @@ POST {{base_url}}/clientes
 Content-Type: application/json
 
 {
-    "nome": "Alexandre",
-    "email": "ale@email.com",
+    "nome": "Gui",
+    "email": "gui@email.com",
     "telefone": "35 9999-0000"
 }
  

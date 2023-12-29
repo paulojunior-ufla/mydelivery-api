@@ -15,7 +15,7 @@ POST {{base_url}}/entregas
 Content-Type: application/json
 
 {
-    "cliente_id": 1,
+    "cliente_id": 2,
     "taxa": 12.98,
     "nome_destinatario": "Flávia",
     "endereco_destinatario": "Rua José das Couves, 999"

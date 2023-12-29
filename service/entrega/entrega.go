@@ -22,7 +22,7 @@ type SolicitaEntregaRequest struct {
 
 type EntregaResponse struct {
 	ID                   int64     `json:"id"`
-	NomeCliente          string    `json:"cliente"`
+	ClienteID            int64     `json:"cliente_id"`
 	Taxa                 float64   `json:"taxa"`
 	Status               string    `json:"status"`
 	DataPedido           time.Time `json:"data_pedido"`
@@ -33,7 +33,7 @@ type EntregaResponse struct {
 func ToEntregaResponse(e model.Entrega) EntregaResponse {
 	return EntregaResponse{
 		ID:                   e.ID(),
-		NomeCliente:          e.Cliente().Nome(),
+		ClienteID:            e.Cliente().ID(),
 		Taxa:                 e.Taxa(),
 		Status:               string(e.Status()),
 		DataPedido:           e.DataPedido(),
