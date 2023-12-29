@@ -28,3 +28,11 @@ func ToRegistraOcorrenciaResponse(o model.Ocorrencia) RegistraOcorrenciaResponse
 		DataRegistro: o.DataRegistro(),
 	}
 }
+
+func ToRegistraOcorrenciaResponseCollection(oo []model.Ocorrencia) []RegistraOcorrenciaResponse {
+	response := []RegistraOcorrenciaResponse{}
+	for _, o := range oo {
+		response = append(response, ToRegistraOcorrenciaResponse(o))
+	}
+	return response
+}

@@ -40,7 +40,7 @@ func main() {
 	handler.NewEntregaHandler(entregaRepo, entrega.NewSolicitaEntregaService(clienteRepo, entregaRepo)).InitRoutes(router)
 
 	ocorrenciaRepo := model.NewOcorrenciaRepositoryDB(db)
-	handler.NewOcorrenciaHandler(ocorrencia.NewRegistraOcorrenciaService(ocorrenciaRepo, entregaRepo)).InitRoutes(router)
+	handler.NewOcorrenciaHandler(ocorrenciaRepo, ocorrencia.NewRegistraOcorrenciaService(ocorrenciaRepo, entregaRepo)).InitRoutes(router)
 
 	addr := ":8080"
 

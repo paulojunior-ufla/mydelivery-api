@@ -7,6 +7,7 @@ import (
 )
 
 type OcorrenciaRepository interface {
+	Todos() ([]Ocorrencia, error)
 	Salvar(o Ocorrencia) (int64, error)
 }
 

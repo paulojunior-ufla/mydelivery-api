@@ -21,7 +21,7 @@ func (s *registraOcorrenciaService) Registrar(idEntrega int64, input RegistraOco
 	}
 
 	if entrega == nil {
-		return RegistraOcorrenciaResponse{}, errs.NewConflictError("entrega da ocorrência inválida")
+		return RegistraOcorrenciaResponse{}, errs.NewNotFoundError("entrega não encontrada")
 	}
 
 	ocorrencia, err := model.NewOcorrencia().

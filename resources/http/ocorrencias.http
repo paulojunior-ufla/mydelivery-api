@@ -1,7 +1,13 @@
 # APP VARS
 
 @base_url = http://localhost:8080
-@entrega_id = 1
+@entrega_id = 100
+
+
+GET {{base_url}}/entregas/{{entrega_id}}/ocorrencias
+
+
+###
 
 POST {{base_url}}/entregas/{{entrega_id}}/ocorrencias
 Content-Type: application/json

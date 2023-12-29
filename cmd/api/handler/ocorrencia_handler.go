@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"go/mydelivery/model"
 	"go/mydelivery/service/ocorrencia"
 	"net/http"
 
@@ -8,15 +9,18 @@ import (
 )
 
 type ocorrenciaHandler struct {
+	ocorrenciasRepo       model.OcorrenciaRepository
 	registrarOcorrenciSrv ocorrencia.RegistraOcorrenciaService
 }
 
 func NewOcorrenciaHandler(
+	ocorrenciasRepo model.OcorrenciaRepository,
 	registrarOcorrenciSrv ocorrencia.RegistraOcorrenciaService) *ocorrenciaHandler {
-	return &ocorrenciaHandler{registrarOcorrenciSrv}
+	return &ocorrenciaHandler{ocorrenciasRepo, registrarOcorrenciSrv}
 }
 
 func (h *ocorrenciaHandler) InitRoutes(router *httprouter.Router) {
+	router.HandlerFunc(http.MethodGet, "/entregas/:id/ocorrencias", h.Listar)
 	router.HandlerFunc(http.MethodPost, "/entregas/:id/ocorrencias", h.RegistrarOcorrencia)
 }
 
@@ -41,4 +45,14 @@ func (h *ocorrenciaHandler) RegistrarOcorrencia(w http.ResponseWriter, r *http.R
 	}
 
 	writeJSON(w, http.StatusCreated, o)
+}
+
+func (h *ocorrenciaHandler) Listar(w http.ResponseWriter, r *http.Request) {
+	ocorrencias, err := h.ocorrenciasRepo.Todos()
+	if err != nil {
+		handleError(w, r, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, ocorrencia.ToRegistraOcorrenciaResponseCollection(ocorrencias))
 }
