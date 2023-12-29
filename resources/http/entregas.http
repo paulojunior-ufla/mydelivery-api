@@ -1,0 +1,15 @@
+# APP VARS
+
+@base_url = http://localhost:8080
+@cliente_id = 123
+
+###
+
+POST {{base_url}}/entregas
+Content-Type: application/json
+
+{
+    "cliente_id": 1,
+    "taxa": 120
+}
+ 

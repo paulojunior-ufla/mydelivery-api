@@ -3,26 +3,26 @@
 @base_url = http://localhost:8080
 @cliente_id = 123
 
-### TODOS CLIENTES
+###
 
 GET {{base_url}}/clientes
 
-### OBTER CLIENTE
+###
 
 GET {{base_url}}/clientes/{{cliente_id}}
 
-### CADASTRAR CLIENTE
+###
 
 POST {{base_url}}/clientes
 Content-Type: application/json
 
 {
-    "nome": "Paulo",
-    "email": "9gg99@email.com",
-    "telefone": "9999"
+    "nome": "Paulo Afonso",
+    "email": "paulo@email.com",
+    "telefone": "35 9999-0000"
 }
  
-### ATUALIZAR CLIENTE
+###
 
 PUT {{base_url}}/clientes/{{cliente_id}}
 Content-Type: application/json
@@ -33,6 +33,6 @@ Content-Type: application/json
     "telefone": "35 9 9999-0000"
 }
 
-### EXCLUIR CLIENTE
+### 
 
 DELETE {{base_url}}/clientes/{{cliente_id}}

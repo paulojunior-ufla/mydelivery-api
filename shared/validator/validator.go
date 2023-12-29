@@ -24,6 +24,12 @@ func (v *Validator) CheckBlank(key, value string) {
 	}
 }
 
+func (v *Validator) Check(ok bool, key, message string) {
+	if !ok {
+		v.Errors = append(v.Errors, fmt.Sprintf("%s: %s", key, message))
+	}
+}
+
 func (v *Validator) CheckMaxLength(key, value string, maxLength int) {
 	if utf8.RuneCountInString(value) > maxLength {
 		message := fmt.Sprintf("%s: pode conter no máximo %d caracteres", key, maxLength)

@@ -47,7 +47,7 @@ func (r *clienteRepositoryDB) ObterPorID(id int64) (Cliente, error) {
 	err := r.db.QueryRow(query, id).Scan(&c.id, &c.nome, &c.email, &c.telefone)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errs.NewNotFoundError("cliente não encontrado")
+			return nil, nil
 		}
 		return nil, errs.NewUnexpectedError(err)
 	}

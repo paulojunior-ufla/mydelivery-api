@@ -3,6 +3,7 @@ package handler
 import (
 	"go/mydelivery/model"
 	"go/mydelivery/service/cliente"
+	"go/mydelivery/shared/errs"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -45,6 +46,11 @@ func (h *clienteHandler) BuscarPorID(w http.ResponseWriter, r *http.Request) {
 	c, err := h.clienteRepo.ObterPorID(id)
 	if err != nil {
 		handleError(w, r, err)
+		return
+	}
+
+	if c == nil {
+		handleError(w, r, errs.NewNotFoundError("cliente não encontrado"))
 		return
 	}
 

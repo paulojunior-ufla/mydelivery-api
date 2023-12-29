@@ -6,6 +6,7 @@ import (
 	"go/mydelivery/cmd/api/handler"
 	"go/mydelivery/model"
 	"go/mydelivery/service/cliente"
+	"go/mydelivery/service/entrega"
 	"log/slog"
 	"net/http"
 	"os"
@@ -33,6 +34,9 @@ func main() {
 
 	clienteRepo := model.NewClienteRepositoryDB(db)
 	handler.NewClienteHandler(clienteRepo, cliente.NewCatalogoService(clienteRepo)).InitRoutes(router)
+
+	entregasRepo := model.NewEntregaRepositoryDB(db)
+	handler.NewEntregaHandler(entrega.NewSolicitaEntregaService(clienteRepo, entregasRepo)).InitRoutes(router)
 
 	addr := ":8080"
 
