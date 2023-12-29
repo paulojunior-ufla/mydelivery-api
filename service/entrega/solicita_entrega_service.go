@@ -21,12 +21,22 @@ func (s *solicitaEntregaService) Solicitar(input SolicitaEntregaRequest) (Solici
 	}
 
 	if cliente == nil {
-		return SolicitaEntregaResponse{}, errs.NewConflictError("cliente inválido")
+		return SolicitaEntregaResponse{}, errs.NewConflictError("cliente da entrega inválido")
+	}
+
+	destinatario, err := model.NewDestinatario().
+		SetNome(input.NomeDestinatario).
+		SetEndereco(input.EnderecoDestinatario).
+		Build()
+
+	if err != nil {
+		return SolicitaEntregaResponse{}, err
 	}
 
 	entrega, err := model.NewEntrega().
 		SetCliente(cliente).
 		SetTaxa(input.Taxa).
+		SetDestinatario(destinatario).
 		Build()
 
 	if err != nil {

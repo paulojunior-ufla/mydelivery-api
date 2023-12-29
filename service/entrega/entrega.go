@@ -2,7 +2,6 @@ package entrega
 
 import (
 	"go/mydelivery/model"
-	"go/mydelivery/service/cliente"
 	"time"
 )
 
@@ -11,22 +10,28 @@ type SolicitaEntregaService interface {
 }
 
 type SolicitaEntregaRequest struct {
-	ClienteID int64   `json:"cliente_id"`
-	Taxa      float64 `json:"taxa"`
+	ClienteID            int64   `json:"cliente_id"`
+	Taxa                 float64 `json:"taxa"`
+	NomeDestinatario     string  `json:"nome_destinatario"`
+	EnderecoDestinatario string  `json:"endereco_destinatario"`
 }
 
 type SolicitaEntregaResponse struct {
-	ID         int64                           `json:"id"`
-	Cliente    cliente.CatalogoClienteResponse `json:"cliente"`
-	Taxa       float64                         `json:"taxa"`
-	DataPedido time.Time                       `json:"data_pedido"`
+	ID                   int64     `json:"id"`
+	NomeCliente          string    `json:"cliente"`
+	Taxa                 float64   `json:"taxa"`
+	DataPedido           time.Time `json:"data_pedido"`
+	NomeDestinatario     string    `json:"nome_destinatario"`
+	EnderecoDestinatario string    `json:"endereco_destinatario"`
 }
 
 func ToSolicitaEntregaResponse(e model.Entrega) SolicitaEntregaResponse {
 	return SolicitaEntregaResponse{
-		ID:         e.ID(),
-		Cliente:    cliente.ToClienteResponse(e.Cliente()),
-		Taxa:       e.Taxa(),
-		DataPedido: e.DataPedido(),
+		ID:                   e.ID(),
+		NomeCliente:          e.Cliente().Nome(),
+		Taxa:                 e.Taxa(),
+		DataPedido:           e.DataPedido(),
+		NomeDestinatario:     e.Destinatario().Nome(),
+		EnderecoDestinatario: e.Destinatario().Endereco(),
 	}
 }

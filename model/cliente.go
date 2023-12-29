@@ -66,9 +66,9 @@ func (b *ClienteBuilder) SetTelefone(telefone string) *ClienteBuilder {
 func (b *ClienteBuilder) Build() (Cliente, error) {
 	v := validator.New()
 
-	v.CheckBlank("nome", b.cliente.nome)
-	v.CheckEmail("email", b.cliente.email)
-	v.CheckBlank("telefone", b.cliente.telefone)
+	v.CheckBlank("nome do cliente", b.cliente.nome)
+	v.CheckEmail("email do cliente", b.cliente.email)
+	v.CheckBlank("telefone do cliente", b.cliente.telefone)
 
 	if v.HasErrors() {
 		return nil, errs.NewValidationError(v.Errors)

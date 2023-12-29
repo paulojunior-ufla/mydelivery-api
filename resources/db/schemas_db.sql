@@ -11,6 +11,8 @@ create table entrega (
     taxa REAL NOT NULL,
     status TEXT CHECK( status != '' ),
     data_pedido DATETIME NOT NULL,
+    dest_nome TEXT CHECK( status != '' ),
+    dest_endereco TEXT CHECK( status != '' ),
     
     FOREIGN KEY(cliente_id) REFERENCES cliente(id)
 );
