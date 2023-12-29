@@ -23,9 +23,20 @@ func NewEntregaHandler(
 }
 
 func (h *entregaHandler) InitRoutes(router *httprouter.Router) {
+	router.HandlerFunc(http.MethodGet, "/entregas", h.Listar)
 	router.HandlerFunc(http.MethodPost, "/entregas", h.Solicitar)
 	router.HandlerFunc(http.MethodGet, "/entregas/:id", h.BuscarPorID)
 	router.HandlerFunc(http.MethodPut, "/entregas/:id/finalizar", h.Finalizar)
+}
+
+func (h *entregaHandler) Listar(w http.ResponseWriter, r *http.Request) {
+	entregas, err := h.entregaRepo.Todos()
+	if err != nil {
+		handleError(w, r, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, entrega.ToEntregaResponseCollection(entregas))
 }
 
 func (h *entregaHandler) Solicitar(w http.ResponseWriter, r *http.Request) {
@@ -73,11 +84,11 @@ func (h *entregaHandler) Finalizar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	e, err := h.finalizaEntregaSrv.Finalizar(id)
+	err = h.finalizaEntregaSrv.Finalizar(id)
 	if err != nil {
 		handleError(w, r, err)
 		return
 	}
 
-	writeJSON(w, http.StatusCreated, e)
+	w.WriteHeader(http.StatusNoContent)
 }

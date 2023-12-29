@@ -10,7 +10,7 @@ type SolicitaEntregaService interface {
 }
 
 type FinalizaEntregaService interface {
-	Finalizar(idEntrega int64) (EntregaResponse, error)
+	Finalizar(idEntrega int64) error
 }
 
 type SolicitaEntregaRequest struct {
@@ -40,4 +40,12 @@ func ToEntregaResponse(e model.Entrega) EntregaResponse {
 		NomeDestinatario:     e.Destinatario().Nome(),
 		EnderecoDestinatario: e.Destinatario().Endereco(),
 	}
+}
+
+func ToEntregaResponseCollection(ee []model.Entrega) []EntregaResponse {
+	response := []EntregaResponse{}
+	for _, e := range ee {
+		response = append(response, ToEntregaResponse(e))
+	}
+	return response
 }

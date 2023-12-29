@@ -1,7 +1,11 @@
 # APP VARS
 
 @base_url = http://localhost:8080
-@entrega_id = 333
+@entrega_id = 1
+
+GET {{base_url}}/entregas
+
+###
 
 GET {{base_url}}/entregas/{{entrega_id}}
 

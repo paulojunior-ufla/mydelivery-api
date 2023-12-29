@@ -7,8 +7,10 @@ import (
 )
 
 type EntregaRepository interface {
-	Salvar(Entrega) (int64, error)
+	Todos() ([]Entrega, error)
 	ObterPorID(int64) (Entrega, error)
+	Salvar(Entrega) (int64, error)
+	Atualizar(Entrega) error
 }
 
 type StatusEntrega string

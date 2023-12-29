@@ -13,21 +13,25 @@ func NewFinalizaEntregaService(entregas model.EntregaRepository) FinalizaEntrega
 	return &finalizaEntregaService{entregas}
 }
 
-func (s *finalizaEntregaService) Finalizar(id int64) (EntregaResponse, error) {
+func (s *finalizaEntregaService) Finalizar(id int64) error {
 	entrega, err := s.entregas.ObterPorID(id)
 	if err != nil {
-		return EntregaResponse{}, err
+		return err
 	}
 
 	if entrega == nil {
-		return EntregaResponse{}, errs.NewNotFoundError("entrega não encontrada")
+		return errs.NewNotFoundError("entrega não encontrada")
 	}
 
 	err = entrega.Finalizar()
 	if err != nil {
-		return EntregaResponse{}, err
+		return err
 	}
 
-	return ToEntregaResponse(entrega), nil
+	err = s.entregas.Atualizar(entrega)
+	if err != nil {
+		return err
+	}
 
+	return nil
 }
