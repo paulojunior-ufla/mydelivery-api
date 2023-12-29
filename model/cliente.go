@@ -1,9 +1,25 @@
-package cliente
+package model
 
 import (
 	"go/mydelivery/shared/errs"
 	"go/mydelivery/shared/validator"
 )
+
+type ClienteRepository interface {
+	Todos() ([]Cliente, error)
+	ObterPorID(int64) (Cliente, error)
+	ObterPorEmail(string) (Cliente, error)
+	Salvar(Cliente) (int64, error)
+	Atualizar(Cliente) error
+	Excluir(int64) error
+}
+
+type Cliente interface {
+	ID() int64
+	Nome() string
+	Email() string
+	Telefone() string
+}
 
 type cliente struct {
 	id       int64
@@ -21,7 +37,7 @@ type ClienteBuilder struct {
 	cliente *cliente
 }
 
-func New() *ClienteBuilder {
+func NewCliente() *ClienteBuilder {
 	return &ClienteBuilder{
 		cliente: &cliente{},
 	}

@@ -1,18 +1,19 @@
 package handler
 
 import (
-	"go/mydelivery/domain/cliente"
+	"go/mydelivery/model"
+	"go/mydelivery/service/cliente"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
 )
 
 type clienteHandler struct {
-	clienteRepo cliente.Repository
-	clienteSrv  cliente.Service
+	clienteRepo model.ClienteRepository
+	clienteSrv  cliente.CatalogoService
 }
 
-func NewClienteHandler(clienteRepo cliente.Repository, clienteSrv cliente.Service) *clienteHandler {
+func NewClienteHandler(clienteRepo model.ClienteRepository, clienteSrv cliente.CatalogoService) *clienteHandler {
 	return &clienteHandler{clienteRepo, clienteSrv}
 }
 
@@ -51,7 +52,7 @@ func (h *clienteHandler) BuscarPorID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *clienteHandler) Salvar(w http.ResponseWriter, r *http.Request) {
-	var input cliente.ClienteRequest
+	var input cliente.CatalogoClienteRequest
 	err := readJSON(r, &input)
 	if err != nil {
 		handleError(w, r, err)
@@ -74,7 +75,7 @@ func (h *clienteHandler) Atualizar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input cliente.ClienteRequest
+	var input cliente.CatalogoClienteRequest
 	err = readJSON(r, &input)
 	if err != nil {
 		handleError(w, r, err)

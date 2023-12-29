@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"flag"
 	"go/mydelivery/cmd/api/handler"
-	"go/mydelivery/data"
-	"go/mydelivery/domain/cliente"
+	"go/mydelivery/model"
+	"go/mydelivery/service/cliente"
 	"log/slog"
 	"net/http"
 	"os"
@@ -31,8 +31,8 @@ func main() {
 
 	router := httprouter.New()
 
-	clienteRepo := data.NewClienteRepository(db)
-	handler.NewClienteHandler(clienteRepo, cliente.NewService(clienteRepo)).InitRoutes(router)
+	clienteRepo := model.NewClienteRepositoryDB(db)
+	handler.NewClienteHandler(clienteRepo, cliente.NewCatalogoService(clienteRepo)).InitRoutes(router)
 
 	addr := ":8080"
 

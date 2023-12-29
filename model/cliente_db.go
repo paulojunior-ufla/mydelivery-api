@@ -1,28 +1,20 @@
-package data
+package model
 
 import (
 	"database/sql"
 	"errors"
-	"go/mydelivery/domain/cliente"
 	"go/mydelivery/shared/errs"
 )
 
-type clienteEntity struct {
-	id       int64
-	nome     string
-	email    string
-	telefone string
-}
-
-type clienteRepository struct {
+type clienteRepositoryDB struct {
 	db *sql.DB
 }
 
-func NewClienteRepository(db *sql.DB) *clienteRepository {
-	return &clienteRepository{db}
+func NewClienteRepositoryDB(db *sql.DB) *clienteRepositoryDB {
+	return &clienteRepositoryDB{db}
 }
 
-func (r *clienteRepository) Todos() ([]cliente.Cliente, error) {
+func (r *clienteRepositoryDB) Todos() ([]Cliente, error) {
 	query := "SELECT id, nome, email, telefone FROM cliente"
 
 	rows, err := r.db.Query(query)
@@ -31,43 +23,43 @@ func (r *clienteRepository) Todos() ([]cliente.Cliente, error) {
 	}
 	defer rows.Close()
 
-	entities := []clienteEntity{}
+	clientes := []Cliente{}
 	for rows.Next() {
-		var e clienteEntity
-		err := rows.Scan(&e.id, &e.nome, &e.email, &e.telefone)
+		var c cliente
+		err := rows.Scan(&c.id, &c.nome, &c.email, &c.telefone)
 		if err != nil {
 			return nil, errs.NewUnexpectedError(err)
 		}
-		entities = append(entities, e)
+		clientes = append(clientes, &c)
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, errs.NewUnexpectedError(err)
 	}
 
-	return toClienteCollection(entities), nil
+	return clientes, nil
 }
 
-func (r *clienteRepository) ObterPorID(id int64) (cliente.Cliente, error) {
+func (r *clienteRepositoryDB) ObterPorID(id int64) (Cliente, error) {
 	query := "SELECT id, nome, email, telefone FROM cliente WHERE id = ?"
 
-	var e clienteEntity
-	err := r.db.QueryRow(query, id).Scan(&e.id, &e.nome, &e.email, &e.telefone)
+	var c cliente
+	err := r.db.QueryRow(query, id).Scan(&c.id, &c.nome, &c.email, &c.telefone)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
+			return nil, errs.NewNotFoundError("cliente não encontrado")
 		}
 		return nil, errs.NewUnexpectedError(err)
 	}
 
-	return toCliente(e), nil
+	return &c, nil
 }
 
-func (r *clienteRepository) ObterPorEmail(email string) (cliente.Cliente, error) {
+func (r *clienteRepositoryDB) ObterPorEmail(email string) (Cliente, error) {
 	query := "SELECT id, nome, email, telefone FROM cliente WHERE email = ?"
 
-	var e clienteEntity
-	err := r.db.QueryRow(query, email).Scan(&e.id, &e.nome, &e.email, &e.telefone)
+	var c cliente
+	err := r.db.QueryRow(query, email).Scan(&c.id, &c.nome, &c.email, &c.telefone)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -75,10 +67,10 @@ func (r *clienteRepository) ObterPorEmail(email string) (cliente.Cliente, error)
 		return nil, errs.NewUnexpectedError(err)
 	}
 
-	return toCliente(e), nil
+	return &c, nil
 }
 
-func (r *clienteRepository) Salvar(c cliente.Cliente) (int64, error) {
+func (r *clienteRepositoryDB) Salvar(c Cliente) (int64, error) {
 	query := "INSERT INTO cliente(nome, email, telefone) VALUES(?, ?, ?)"
 
 	result, err := r.db.Exec(query, c.Nome(), c.Email(), c.Telefone())
@@ -94,7 +86,7 @@ func (r *clienteRepository) Salvar(c cliente.Cliente) (int64, error) {
 	return id, nil
 }
 
-func (r *clienteRepository) Atualizar(c cliente.Cliente) error {
+func (r *clienteRepositoryDB) Atualizar(c Cliente) error {
 	query := "UPDATE cliente SET nome = ?, email = ?, telefone = ? WHERE id = ?"
 
 	result, err := r.db.Exec(query, c.Nome(), c.Email(), c.Telefone(), c.ID())
@@ -114,7 +106,7 @@ func (r *clienteRepository) Atualizar(c cliente.Cliente) error {
 	return nil
 }
 
-func (r *clienteRepository) Excluir(id int64) error {
+func (r *clienteRepositoryDB) Excluir(id int64) error {
 	query := "DELETE FROM cliente WHERE id = ?"
 
 	result, err := r.db.Exec(query, id)
@@ -132,23 +124,4 @@ func (r *clienteRepository) Excluir(id int64) error {
 	}
 
 	return nil
-}
-
-func toClienteCollection(entities []clienteEntity) []cliente.Cliente {
-	clientes := []cliente.Cliente{}
-	for _, e := range entities {
-		clientes = append(clientes, toCliente(e))
-	}
-	return clientes
-}
-
-func toCliente(e clienteEntity) cliente.Cliente {
-	cliente, _ := cliente.New().
-		SetID(e.id).
-		SetNome(e.nome).
-		SetEmail(e.email).
-		SetTelefone(e.telefone).
-		Build()
-
-	return cliente
 }
