@@ -72,20 +72,3 @@ func (s *catalogoService) Atualizar(id int64, input CatalogoClienteRequest) (Cat
 
 	return ToClienteResponse(cliente), nil
 }
-
-func ToClienteResponse(c model.Cliente) CatalogoClienteResponse {
-	return CatalogoClienteResponse{
-		ID:       c.ID(),
-		Nome:     c.Nome(),
-		Email:    c.Email(),
-		Telefone: c.Telefone(),
-	}
-}
-
-func ToClienteResponseCollection(cc []model.Cliente) []CatalogoClienteResponse {
-	response := []CatalogoClienteResponse{}
-	for _, c := range cc {
-		response = append(response, ToClienteResponse(c))
-	}
-	return response
-}

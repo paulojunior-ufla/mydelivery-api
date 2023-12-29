@@ -3,10 +3,12 @@ package model
 import (
 	"go/mydelivery/shared/errs"
 	"go/mydelivery/shared/validator"
+	"time"
 )
 
 type EntregaRepository interface {
 	Salvar(Entrega) (int64, error)
+	ObterPorID(int64) (Entrega, error)
 }
 
 type StatusEntrega string
@@ -22,19 +24,22 @@ type Entrega interface {
 	Cliente() Cliente
 	Taxa() float64
 	Status() StatusEntrega
+	DataPedido() time.Time
 }
 
 type entrega struct {
-	id      int64
-	cliente Cliente
-	taxa    float64
-	status  StatusEntrega
+	id         int64
+	cliente    Cliente
+	taxa       float64
+	status     StatusEntrega
+	dataPedido time.Time
 }
 
 func (e *entrega) ID() int64             { return e.id }
 func (e *entrega) Cliente() Cliente      { return e.cliente }
 func (e *entrega) Taxa() float64         { return e.taxa }
 func (e *entrega) Status() StatusEntrega { return e.status }
+func (e *entrega) DataPedido() time.Time { return e.dataPedido }
 
 type entregaBuilder struct {
 	entrega *entrega
@@ -43,7 +48,8 @@ type entregaBuilder struct {
 func NewEntrega() *entregaBuilder {
 	return &entregaBuilder{
 		entrega: &entrega{
-			status: ENTREGA_PENDENTE,
+			status:     ENTREGA_PENDENTE,
+			dataPedido: time.Now(),
 		},
 	}
 }
@@ -63,11 +69,6 @@ func (b *entregaBuilder) SetTaxa(taxa float64) *entregaBuilder {
 	return b
 }
 
-func (b *entregaBuilder) SetStatus(status StatusEntrega) *entregaBuilder {
-	b.entrega.status = status
-	return b
-}
-
 func (b *entregaBuilder) Build() (Entrega, error) {
 	v := validator.New()
 
@@ -76,6 +77,9 @@ func (b *entregaBuilder) Build() (Entrega, error) {
 
 	statusEntregaValido := b.entrega.status == ENTREGA_PENDENTE || b.entrega.status == ENTREGA_FINALIZADA || b.entrega.status == ENTREGA_CANCELADA
 	v.Check(statusEntregaValido, "status", "não é válido")
+
+	dataPedidoValida := time.Now().After(b.entrega.dataPedido)
+	v.Check(dataPedidoValida, "data do pedido", "não pode ser maior que a data atual")
 
 	if v.HasErrors() {
 		return nil, errs.NewValidationError(v.Errors)

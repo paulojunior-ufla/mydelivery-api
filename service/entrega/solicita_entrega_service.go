@@ -38,5 +38,8 @@ func (s *solicitaEntregaService) Solicitar(input SolicitaEntregaRequest) (Solici
 		return SolicitaEntregaResponse{}, err
 	}
 
-	return SolicitaEntregaResponse{ID: idNovaEntrega}, nil
+	response := ToSolicitaEntregaResponse(entrega)
+	response.ID = idNovaEntrega
+
+	return response, nil
 }

@@ -10,6 +10,7 @@ create table entrega (
     cliente_id INTEGER NOT NULL,
     taxa REAL NOT NULL,
     status TEXT CHECK( status != '' ),
+    data_pedido DATETIME NOT NULL,
     
     FOREIGN KEY(cliente_id) REFERENCES cliente(id)
 );

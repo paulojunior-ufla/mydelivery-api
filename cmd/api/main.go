@@ -35,8 +35,8 @@ func main() {
 	clienteRepo := model.NewClienteRepositoryDB(db)
 	handler.NewClienteHandler(clienteRepo, cliente.NewCatalogoService(clienteRepo)).InitRoutes(router)
 
-	entregasRepo := model.NewEntregaRepositoryDB(db)
-	handler.NewEntregaHandler(entrega.NewSolicitaEntregaService(clienteRepo, entregasRepo)).InitRoutes(router)
+	entregaRepo := model.NewEntregaRepositoryDB(db)
+	handler.NewEntregaHandler(entregaRepo, entrega.NewSolicitaEntregaService(clienteRepo, entregaRepo)).InitRoutes(router)
 
 	addr := ":8080"
 
